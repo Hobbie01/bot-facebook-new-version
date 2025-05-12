@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Index</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: sans-serif;
+        background: #f0f2f5;
+        margin: 0;
+        padding: 1rem;
+      }
+
+      h2 {
+        margin: 0.5rem 0;
+      }
+
+      select,
+      textarea,
+      input {
+        width: 100%;
+        padding: 0.4rem;
+        margin-bottom: 0.8rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 0.9rem;
+      }
+
+      textarea {
+        height: 100px;
+        resize: none;
+      }
+
+      button {
+        padding: 0.6rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        width: 100%;
+      }
+      input[type="checkbox"] {
+        appearance: none;
+        width: 1.1rem;
+        height: 1.1rem;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        vertical-align: middle;
+        transition: all 0.2s ease-in-out;
+      }
+
+      input[type="checkbox"]:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+
+      input[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 5px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      #start-btn {
+        background: #28a745;
+        color: white;
+      }
+
+      #settings-open-btn {
+        background: #007bff;
+        color: white;
+      }
+
+      #close-btn {
+        background: #f96666;
+        color: white;
+      }
+
+      #log {
+        background: rgb(17, 16, 16);
+        color: lime;
+        padding: 0.5rem;
+        height: 300px;
+        overflow-y: auto;
+        font-size: 0.75rem;
+        border-radius: 5px;
+        margin-top: 0.5rem;
+      }
+
+      #settings-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background: white;
+        margin: 5% auto;
+        padding: 1rem;
+        width: 95%;
+        max-width: 1000px;
+        border-radius: 10px;
+      }
+
+      .tab-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .tab-buttons button {
+        flex: 1;
+        margin: 0 2px;
+        font-size: 0.8rem;
+      }
+
+      .tab-buttons button.active {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .table-wrapper {
+        max-height: 40vh;
+        height: 40vh;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 0.5rem;
+      }
+
+      .form-section {
+        display: none;
+      }
+
+      .form-section.active {
+        display: block;
+      }
+
+      #tableContainer {
+        max-height: 150px;
+        overflow: auto;
+        font-size: 0.75rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 4px;
+        word-wrap: break-word;
+      }
+
+      .action-btn {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+        margin: 0 2px;
+      }
+
+      .repeat-options {
+        display: none;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 style="text-align: center">ฟังก์ชั่น</h2>
+    <select id="function-select">
+      <option value="push">ดันโพสต์</option>
+      <option value="post">โพสต์</option>
+    </select>
+    <label>
+      <input type="checkbox" id="facebook-checkbox" />
+      แสดงหน้า Facebook
+    </label>
+    <label>
+      <input type="checkbox" id="repeat-checkbox" />
+      ทำงานซ้ำ
+    </label>
+
+    <div class="repeat-options" id="repeat-options">
+      <select id="repeat-hour">
+        <option value="">-- ชั่วโมง --</option>
+      </select>
+      <select id="repeat-minute">
+        <option value="">-- นาที --</option>
+      </select>
+    </div>
+
+    <button id="start-btn">▶️ Start</button>
+    <button id="settings-open-btn">⚙️ Settings</button>
+
+    <textarea id="cookie-box" placeholder="Cookies..."></textarea>
+
+    <div id="log">[Log จะอยู่ตรงนี้]</div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal">
+      <div class="modal-content">
+        <div class="tab-buttons">
+          <button onclick="showTab('push')">ดันโพสต์</button>
+          <button onclick="showTab('post')">โพสต์</button>
+        </div>
+
+        <div class="form-section" id="push-tab">
+          <input type="text" placeholder="Link" id="p-group" />
+          <textarea placeholder="Comment" id="p-comment"></textarea>
+          <input type="text" placeholder="PATH รูปภาพ" id="p-image" />
+          <button onclick="saveConfig('push')">บันทึก</button>
+          <div class="table-wrapper">
+            <div id="push-table-container"></div>
+          </div>
+        </div>
+
+        <div class="form-section" id="post-tab">
+          <input type="text" placeholder="Link" id="po-group" />
+          <textarea placeholder="Comment" id="po-comment"></textarea>
+          <input type="text" placeholder="PATH รูปภาพ" id="po-image" />
+          <button onclick="saveConfig('post')">บันทึก</button>
+          <div class="table-wrapper">
+            <div id="post-table-container"></div>
+          </div>
+        </div>
+
+        <button id="close-btn" onclick="modal.style.display = 'none'">
+          ❌ Close
+        </button>
+      </div>
+    </div>
+
+    <script defer>
+      const logBox = document.getElementById("log");
+      const modal = document.getElementById("settings-modal");
+      const repeatCheckbox = document.getElementById("repeat-checkbox");
+      const repeatOptions = document.getElementById("repeat-options");
+      const facebookCheckbox = document.getElementById("facebook-checkbox");
+
+      const data = {
+        push: [],
+        post: [],
+      };
+
+      document.getElementById("settings-open-btn").onclick = () => {
+        modal.style.display = "block";
+        showTab("push");
+        loadConfigFromPython();
+      };
+
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      repeatCheckbox.addEventListener("change", () => {
+        repeatOptions.style.display = repeatCheckbox.checked ? "flex" : "none";
+      });
+
+      function showTab(tab) {
+        document
+          .querySelectorAll(".form-section")
+          .forEach((el) => el.classList.remove("active"));
+
+        document
+          .querySelectorAll(".tab-buttons button")
+          .forEach((btn) => btn.classList.remove("active"));
+
+        document.getElementById(tab + "-tab").classList.add("active");
+
+        const activeBtn = Array.from(
+          document.querySelectorAll(".tab-buttons button")
+        ).find(
+          (btn) =>
+            btn.textContent.trim() === (tab === "push" ? "ดันโพสต์" : "โพสต์")
+        );
+        if (activeBtn) activeBtn.classList.add("active");
+      }
+
+      function saveConfig(type) {
+        const id =
+          data[type].length > 0 ? data[type][data[type].length - 1].id + 1 : 1;
+        let entry;
+
+        if (type === "push") {
+          entry = {
+            id,
+            type,
+            post: document.getElementById("p-group").value,
+            comment: document.getElementById("p-comment").value,
+            image: document.getElementById("p-image").value,
+          };
+        } else {
+          entry = {
+            id,
+            type,
+            group: document.getElementById("po-group").value,
+            comment: document.getElementById("po-comment").value,
+            image: document.getElementById("po-image").value,
+          };
+        }
+
+        data[type].push(entry);
+        renderTable(type);
+
+        // clear form
+        ["group", "post", "comment", "image"].forEach((key) => {
+          const el =
+            document.getElementById(`${type[0]}o-${key}`) ||
+            document.getElementById(`${type[0]}-${key}`);
+          if (el) el.value = "";
+        });
+
+        if (window.pywebview) {
+          window.pywebview.api.save_config(entry);
+        }
+      }
+
+      function renderTable(type) {
+        const container = document.getElementById(`${type}-table-container`);
+        const items = data[type].map(({ type, ...rest }) => rest);
+
+        if (items.length === 0) {
+          container.innerHTML =
+            "<p style='font-size: 0.75rem;'>ไม่มีข้อมูล</p>";
+          return;
+        }
+
+        let html = "<table><tr>";
+
+        Object.keys(items[0]).forEach((key) => {
+          if (key !== "id") html += `<th>${key}</th>`;
+        });
+
+        html += "<th style='width: 60px;'>จัดการ</th></tr>";
+
+        items.forEach((item, idx) => {
+          html += "<tr>";
+          Object.entries(item).forEach(([key, val]) => {
+            if (key !== "id") html += `<td>${val}</td>`;
+          });
+          html += `<td><button class="action-btn" onclick="del('${type}','${idx}','${item.id}')">ลบ</button></td></tr>`;
+        });
+
+        html += "</table>";
+        container.innerHTML = html;
+      }
+
+      function del(type, idx, id) {
+        data[type].splice(idx, 1);
+        renderTable(type);
+        if (window.pywebview) {
+          window.pywebview.api.delete_config(id, type);
+        }
+      }
+
+      async function loadConfigFromPython() {
+        if (window.pywebview) {
+          const allData = await window.pywebview.api.get_all();
+          data.comment = allData.filter((d) => d.type === "comment");
+          data.push = allData.filter((d) => d.type === "push");
+          data.post = allData.filter((d) => d.type === "post");
+
+          renderTable("push");
+          renderTable("post");
+        }
+      }
+
+      function addLog(msg) {
+        const now = new Date().toLocaleString();
+        logBox.innerText += `\n[${now}] ${msg}`;
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+      function populateTimeDropdowns() {
+        const hourSelect = document.getElementById("repeat-hour");
+        const minuteSelect = document.getElementById("repeat-minute");
+
+        for (let h = 0; h < 24; h++) {
+          const option = document.createElement("option");
+          option.value = h;
+          option.textContent = h;
+          hourSelect.appendChild(option);
+        }
+
+        for (let m = 0; m < 60; m++) {
+          const option = document.createElement("option");
+          option.value = m;
+          option.textContent = m;
+          minuteSelect.appendChild(option);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", populateTimeDropdowns);
+
+      document.getElementById("start-btn").onclick = async () => {
+        const selected = document.getElementById("function-select").value;
+        const cookie = document.getElementById("cookie-box").value;
+
+        const repeat = repeatCheckbox.checked;
+        const hour = document.getElementById("repeat-hour").value;
+        const minute = document.getElementById("repeat-minute").value;
+        const show = facebookCheckbox.checked;
+        const config = { repeat, hour, minute, show };
+
+        if (window.pywebview) {
+          const checkCookies = await window.pywebview.api.save_cookie(cookie);
+          if (checkCookies) {
+            addLog(
+              `Start ${selected} (Repeat: ${
+                repeat ? `${hour}h ${minute}m` : "No"
+              })`
+            );
+            window.pywebview.api.start(selected, config);
+          } else {
+            alert("Cookies ไม่ถูกต้อง");
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

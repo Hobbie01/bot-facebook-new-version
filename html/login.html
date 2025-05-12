@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>เข้าสู่ระบบ (Login)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div
+      style="
+        max-width: 400px;
+        margin: 40px auto;
+        border: 1px solid #ddd;
+        padding: 2em;
+        border-radius: 8px;
+        box-shadow: 0 0 20px #f8f8f8;
+      "
+    >
+      <h2>เข้าสู่ระบบ</h2>
+      <div style="margin-bottom: 1em">
+        <label>Hardware ID</label>
+        <input id="hardware_id" type="text" style="width: 100%" readonly />
+        <button id="copy_hw" type="button">คัดลอก</button>
+      </div>
+      <div style="margin-bottom: 1em">
+        <label>Code ที่ได้รับ</label>
+        <input
+          id="code_input"
+          type="text"
+          style="width: 100%"
+          autocomplete="off"
+        />
+      </div>
+      <button id="login_btn">เข้าสู่ระบบ</button>
+      <div id="login_msg" style="margin-top: 1em; color: #c00"></div>
+    </div>
+    <script>
+      // Auto-redirect ถ้าเคย login และโค้ดถูก
+      (async function () {
+        try {
+          if (
+            window.pywebview &&
+            window.pywebview.api &&
+            window.pywebview.api.get_saved_code
+          ) {
+            const savedCode = await window.pywebview.api.get_saved_code();
+            if (savedCode && window.pywebview.api.check_login) {
+              const ok = await window.pywebview.api.check_login(savedCode);
+              if (ok) {
+                window.location = "index.html";
+                return;
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+
+      // วนรอ pywebview.api แล้ว get hardware id
+      function renderHardwareId() {
+        if (
+          window.pywebview &&
+          window.pywebview.api &&
+          window.pywebview.api.get_hardware_id
+        ) {
+          window.pywebview.api
+            .get_hardware_id()
+            .then((hw) => {
+              document.getElementById("hardware_id").value = hw;
+            })
+            .catch(() => {
+              document.getElementById("hardware_id").value = "";
+            });
+        } else {
+          setTimeout(renderHardwareId, 200);
+        }
+      }
+      renderHardwareId();
+
+      document.getElementById("copy_hw").onclick = function () {
+        const v = document.getElementById("hardware_id");
+        v.select();
+        document.execCommand("copy");
+      };
+      // ปุ่ม login: retry และแสดงข้อความถ้า pywebview ยังไม่สร้าง api
+      document.getElementById("login_btn").onclick = async function () {
+        const code = document.getElementById("code_input").value.trim();
+        if (!code) return;
+        if (
+          window.pywebview &&
+          window.pywebview.api &&
+          window.pywebview.api.check_login
+        ) {
+          try {
+            const ok = await window.pywebview.api.check_login(code);
+            if (ok) window.location = "index.html";
+            else
+              document.getElementById("login_msg").innerText =
+                "โค้ดไม่ถูกต้อง กรุณาตรวจสอบใหม่";
+          } catch (e) {
+            document.getElementById("login_msg").innerText =
+              "เกิดข้อผิดพลาดเชื่อมต่อ API";
+          }
+        } else {
+          document.getElementById("login_msg").innerText =
+            "ระบบยังไม่พร้อม กรุณารอสักครู่...";
+          setTimeout(() => document.getElementById("login_btn").onclick(), 600);
+        }
+      };
+    </script>
+  </body>
+</html>

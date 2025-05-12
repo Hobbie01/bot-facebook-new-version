@@ -1,0 +1,13 @@
+body { font-family: 'Sarabun', Tahoma, sans-serif; background: #fafbff; }
+h2, h4 { color: #25406e; }
+input, select, textarea { border:1px solid #bbb; border-radius: 5px; padding: 7px; box-sizing: border-box; margin-bottom: .5em; font-size: 15px; }
+input:focus, textarea:focus { outline: 2px solid #9cecfb; border-color:#87c6ff; }
+button { background: #0a67ad; color: white; border: none; border-radius: 6px; padding: .6em 1.2em; font-size: 15px; cursor: pointer; transition:.1s; }
+button:hover { background:#085193; }
+table { border-radius:8px; background: #fff; box-shadow:0 3px 16px #ececff2a; font-size:14px; }
+th { background: #aee2ff }
+td, th { padding: .7em .6em; }
+tr:nth-child(even){ background:#f4fbff; }
+hr {
+  border: none; border-bottom: 1px solid #d8e0eb; margin: 1.5em 0;
+}
