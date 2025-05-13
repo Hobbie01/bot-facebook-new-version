@@ -137,8 +137,8 @@
       }
 
       .table-wrapper {
-        max-height: 40vh;
-        height: 40vh;
+        max-height: 30vh;
+        height: 30vh;
         overflow-y: auto;
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -188,7 +188,7 @@
   <body>
     <h2 style="text-align: center">ฟังก์ชั่น</h2>
     <select id="function-select">
-      <option value="push">ดันโพสต์</option>
+      <!-- <option value="push">ดันโพสต์</option> -->
       <option value="post">โพสต์</option>
     </select>
     <label>
@@ -212,7 +212,7 @@
     <button id="start-btn">▶️ Start</button>
     <button id="settings-open-btn">⚙️ Settings</button>
 
-    <textarea id="cookie-box" placeholder="Cookies..."></textarea>
+    <!-- <textarea id="cookie-box" placeholder="Cookies..."></textarea> -->
 
     <div id="log">[Log จะอยู่ตรงนี้]</div>
 
@@ -220,7 +220,7 @@
     <div id="settings-modal">
       <div class="modal-content">
         <div class="tab-buttons">
-          <button onclick="showTab('push')">ดันโพสต์</button>
+          <!-- <button onclick="showTab('push')">ดันโพสต์</button> -->
           <button onclick="showTab('post')">โพสต์</button>
         </div>
 
@@ -236,6 +236,7 @@
 
         <div class="form-section" id="post-tab">
           <input type="text" placeholder="Link" id="po-group" />
+          <textarea placeholder="Cookies" id="po-cookies"></textarea>
           <textarea placeholder="Comment" id="po-comment"></textarea>
           <input type="text" placeholder="PATH รูปภาพ" id="po-image" />
           <button onclick="saveConfig('post')">บันทึก</button>
@@ -264,7 +265,7 @@
 
       document.getElementById("settings-open-btn").onclick = () => {
         modal.style.display = "block";
-        showTab("push");
+        showTab("post");
         loadConfigFromPython();
       };
 
@@ -318,6 +319,7 @@
             group: document.getElementById("po-group").value,
             comment: document.getElementById("po-comment").value,
             image: document.getElementById("po-image").value,
+            cookies: document.getElementById("po-cookies").value,
           };
         }
 
@@ -325,7 +327,7 @@
         renderTable(type);
 
         // clear form
-        ["group", "post", "comment", "image"].forEach((key) => {
+        ["group", "post", "comment", "image", "cookies"].forEach((key) => {
           const el =
             document.getElementById(`${type[0]}o-${key}`) ||
             document.getElementById(`${type[0]}-${key}`);
@@ -339,7 +341,7 @@
 
       function renderTable(type) {
         const container = document.getElementById(`${type}-table-container`);
-        const items = data[type].map(({ type, ...rest }) => rest);
+        const items = data[type].map(({ type, cookies, ...rest }) => rest);
 
         if (items.length === 0) {
           container.innerHTML =
@@ -415,7 +417,7 @@
 
       document.getElementById("start-btn").onclick = async () => {
         const selected = document.getElementById("function-select").value;
-        const cookie = document.getElementById("cookie-box").value;
+        // const cookie = document.getElementById("cookie-box").value;
 
         const repeat = repeatCheckbox.checked;
         const hour = document.getElementById("repeat-hour").value;
@@ -424,17 +426,13 @@
         const config = { repeat, hour, minute, show };
 
         if (window.pywebview) {
-          const checkCookies = await window.pywebview.api.save_cookie(cookie);
-          if (checkCookies) {
-            addLog(
-              `Start ${selected} (Repeat: ${
-                repeat ? `${hour}h ${minute}m` : "No"
-              })`
-            );
-            window.pywebview.api.start(selected, config);
-          } else {
-            alert("Cookies ไม่ถูกต้อง");
-          }
+          // const checkCookies = await window.pywebview.api.save_cookie(cookie);
+          addLog(
+            `Start ${selected} (Repeat: ${
+              repeat ? `${hour}h ${minute}m` : "No"
+            })`
+          );
+          window.pywebview.api.start(selected, config);
         }
       };
     </script>

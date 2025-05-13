@@ -3,9 +3,10 @@ from selenium.webdriver.common.keys import Keys # type: ignore
 from selenium.webdriver.common.action_chains import ActionChains # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
 from selenium.webdriver.support.ui import WebDriverWait # type: ignore
+from services.login_facebook import login_cookies
+from services.read_settings import read_json_by_type
 from utils.commands.image import upload_image
 
-from services.excel import read_post_in_group_sheet
 
 import time
 import pyperclip
@@ -21,12 +22,16 @@ key_cmd = Keys.COMMAND if is_mac else Keys.CONTROL
 def start_post_in_group(driver):
     try:
         print_log("Post In Group...")
-        df_comment_in_group = read_post_in_group_sheet()
-        print_log(len(df_comment_in_group))
-        for _, row in df_comment_in_group.iterrows():
-            link = row['ลิงค์กลุ่ม']
-            comment = row['คอมเมนต์']
-            image = row['รูปภาพ']
+        data = read_json_by_type("post")
+        for row in data:
+            print(row)
+            link = row['group']
+            comment = row['comment']
+            image = row['image']
+            cooikies = row['cookies']
+            status_login = login_cookies(driver, cooikies)
+            if not status_login:
+                continue
             driver.get(link)
             post = WebDriverWait(driver, 40).until(
             EC.presence_of_element_located(
@@ -36,18 +41,20 @@ def start_post_in_group(driver):
             # 
             # คลิกที่ span
             post.click()
-            time.sleep(5)
+            time.sleep(2)
             actions = ActionChains(driver)
-            pyperclip.copy(comment)
-            actions.key_down(key_cmd).send_keys("v").key_up(key_cmd).perform()
+            sub_lines = comment.split("\n")
+            for sub_line in sub_lines:
+                actions.send_keys(sub_line)
+                actions.key_down(Keys.SHIFT).send_keys(Keys.ENTER).key_up(Keys.SHIFT)
             time.sleep(random.uniform(3, 10))  
+            # ส่ง RETURN (Enter) และ ESCAPE เพื่อปิดช่องคอมเมนต์
             actions.send_keys(Keys.RETURN).perform()
             image_buttons = WebDriverWait(driver, 100).until(
     EC.presence_of_all_elements_located(
         (By.XPATH, '//div[contains(@class, "x6s0dn4") and contains(@class, "x78zum5") and contains(@class, "xl56j7k") and contains(@class, "x1n2onr6") and contains(@class, "x5yr21d") and contains(@class, "xh8yej3")]')
     )
 )
-
             if image_buttons:
                 image_buttons[1].click()
             if not (isinstance(image, float) and math.isnan(image) or image == "-"):
@@ -57,7 +64,6 @@ def start_post_in_group(driver):
                         upload_image(driver,image_files)
                 except Exception as e:
                         print_log(f"ไม่พบ input file ใน div นี้ {e}")
-                # upload_image(image_files)
             # ✅ กดปุ่มโพสต์
             post_button = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, '//div[@role="button" and @aria-label="โพสต์"]'))

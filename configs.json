@@ -1,9 +1,10 @@
 [
   {
     "id": 1,
-    "type": "push",
-    "post": "https://www.facebook.com/share/p/1Kqr18rLGE/",
-    "comment": "ดัน",
-    "image": ""
+    "type": "post",
+    "group": "https://www.facebook.com/groups/218223558216532",
+    "comment": "ระบบ:พร้อมใช้งาน",
+    "image": "/Users/tp/Documents/ProjectBot/bot-facebook-py/test1.png",
+    "cookies": "sb=b-zTZqVilY93DCWtwdXdz-gi;datr=TZfLZ1e9wElBVUCjao1ItXWF;ps_l=1;ps_n=1;c_user=100010893247259;presence=C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1747036502410%2C%22v%22%3A1%7D;wd=1440x812;fr=1VeNAQpOElRta1WfS.AWeREX1VO5Cq37Ti6duaWWwZHTF7aFSZ0TyFLiMHmf60iFWPEBc.BoIsn4..AAA.0.0.BoIsn4.AWdNpNXJLv-dgB4TGnCKMBE8jHo;xs=18%3A2ipssBbCiQeb1w%3A2%3A1741797244%3A-1%3A12096%3A%3AAcUWILM2MTZaIR_OTYg-wo3MCP2Lr8-QOizpC13vJArN;"
   }
 ]

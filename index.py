@@ -1,6 +1,5 @@
 from bot import bot_start
 from utils.convert_cookie import convert_cookie_string
-from utils.login import check_token, get_hardware_id
 from utils.print_log import print_log
 import webview
 import json
@@ -146,6 +145,7 @@ class Api:
         else:
             webview.windows[0].evaluate_js("addLog('❌ Invalid cookie format')")
             return False
+   
        
 api = Api()
 

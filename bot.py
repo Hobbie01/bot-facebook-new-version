@@ -24,7 +24,7 @@ def bot_start(selected,config):
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-translate")  # ปิดการแปลภาษาอัตโนมัติ
     options.add_argument("--disable-popup-blocking")  # ปิดการบล็อกป็อปอัพ
-    if config['show']: 
+    if not config['show']: 
         options.add_argument("--headless")  # Run Chrome in headless mode
     options.add_argument("--disable-gpu")  # Disable GPU for headless mode
     options.add_argument("--no-sandbox")  # Bypass OS security model
@@ -35,7 +35,7 @@ def bot_start(selected,config):
     driver = uc.Chrome(options=options)
     driver.set_window_size(600, 800)
     print_log("Starting the bot...")
-    login(driver)
+    # login(driver)
     status = True
     try:
         while status:
