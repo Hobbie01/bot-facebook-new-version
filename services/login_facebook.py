@@ -26,6 +26,7 @@ def login(driver):
        print_log("Login failed, please check your cookies.")
        
 def login_cookies(driver, cookie):
+    
     driver.get("https://www.facebook.com/")
     cookies = convert_cookie_string(cookie)
     if not cookies:

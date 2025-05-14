@@ -8,11 +8,21 @@ import subprocess
 import hmac
 import hashlib
 import os
-
+import sys
 
 SECRET_KEY = "mysecretkey"  # Secret Key ที่ใช้ในการสร้าง HMAC
 CODE_FILE = 'login_code.json'
 CONFIG_FILE = 'user_config.json'
+
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS  # ใช้ตอนรันจาก pyinstaller
+    except AttributeError:
+        base_path = os.path.abspath(".")  # ตอนรันจาก python ปกติ
+    return os.path.join(base_path, relative_path)
+
 
 # ----- Hardware ID -----
 def get_hardware_id():
@@ -155,11 +165,12 @@ if __name__ == '__main__':
     hardware_id = get_hardware_id()
     saved_code = load_code()
     page = 'login.html'
+
     if saved_code and verify_code(hardware_id, saved_code):
         page = 'index.html'
     webview.create_window(
         title="Bot Facebook",
-        url=os.path.abspath(f"html/{page}"),
+        url=resource_path(f"html/{page}"),
         js_api=api,
         width=1200,
         height=800,
