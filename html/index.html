@@ -327,7 +327,7 @@
         renderTable(type);
 
         // clear form
-        ["group", "post", "comment", "image", "cookies"].forEach((key) => {
+        ["group", "post", "comment", "image"].forEach((key) => {
           const el =
             document.getElementById(`${type[0]}o-${key}`) ||
             document.getElementById(`${type[0]}-${key}`);
@@ -383,7 +383,6 @@
           data.comment = allData.filter((d) => d.type === "comment");
           data.push = allData.filter((d) => d.type === "push");
           data.post = allData.filter((d) => d.type === "post");
-
           renderTable("push");
           renderTable("post");
         }
