@@ -188,8 +188,8 @@
   <body>
     <h2 style="text-align: center">ฟังก์ชั่น</h2>
     <select id="function-select">
-      <!-- <option value="push">ดันโพสต์</option> -->
       <option value="post">โพสต์</option>
+      <option value="comment">คอมเมนต์</option>
     </select>
     <label>
       <input type="checkbox" id="facebook-checkbox" />
@@ -220,17 +220,18 @@
     <div id="settings-modal">
       <div class="modal-content">
         <div class="tab-buttons">
-          <!-- <button onclick="showTab('push')">ดันโพสต์</button> -->
           <button onclick="showTab('post')">โพสต์</button>
+          <button onclick="showTab('comment')">คอมเมนต์</button>
         </div>
 
-        <div class="form-section" id="push-tab">
-          <input type="text" placeholder="Link" id="p-group" />
-          <textarea placeholder="Comment" id="p-comment"></textarea>
-          <input type="text" placeholder="PATH รูปภาพ" id="p-image" />
-          <button onclick="saveConfig('push')">บันทึก</button>
+        <div class="form-section" id="comment-tab">
+          <input type="text" placeholder="Link" id="c-group" />
+          <textarea placeholder="Cookies" id="c-cookies"></textarea>
+          <textarea placeholder="Comment" id="c-comment"></textarea>
+          <input type="text" placeholder="PATH รูปภาพ" id="c-image" />
+          <button onclick="saveConfig('comment')">บันทึก</button>
           <div class="table-wrapper">
-            <div id="push-table-container"></div>
+            <div id="comment-table-container"></div>
           </div>
         </div>
 
@@ -259,7 +260,7 @@
       const facebookCheckbox = document.getElementById("facebook-checkbox");
 
       const data = {
-        push: [],
+        comment: [],
         post: [],
       };
 
@@ -294,7 +295,8 @@
           document.querySelectorAll(".tab-buttons button")
         ).find(
           (btn) =>
-            btn.textContent.trim() === (tab === "push" ? "ดันโพสต์" : "โพสต์")
+            btn.textContent.trim() ===
+            (tab === "comment" ? "คอมเมนต์" : "โพสต์")
         );
         if (activeBtn) activeBtn.classList.add("active");
       }
@@ -304,13 +306,14 @@
           data[type].length > 0 ? data[type][data[type].length - 1].id + 1 : 1;
         let entry;
 
-        if (type === "push") {
+        if (type === "comment") {
           entry = {
             id,
             type,
-            post: document.getElementById("p-group").value,
-            comment: document.getElementById("p-comment").value,
-            image: document.getElementById("p-image").value,
+            post: document.getElementById("c-group").value,
+            comment: document.getElementById("c-comment").value,
+            image: document.getElementById("c-image").value,
+            cookies: document.getElementById("c-cookies").value,
           };
         } else {
           entry = {
@@ -381,9 +384,8 @@
         if (window.pywebview) {
           const allData = await window.pywebview.api.get_all();
           data.comment = allData.filter((d) => d.type === "comment");
-          data.push = allData.filter((d) => d.type === "push");
           data.post = allData.filter((d) => d.type === "post");
-          renderTable("push");
+          renderTable("comment");
           renderTable("post");
         }
       }
