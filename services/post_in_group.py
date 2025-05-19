@@ -9,16 +9,11 @@ from utils.commands.image import upload_image
 
 
 import time
-import pyperclip
 import random
 import math
-import platform
 from utils.print_log import print_log
 
-is_mac = platform.system() == "Darwin"
 
-# เลือก Key ตาม OS
-key_cmd = Keys.COMMAND if is_mac else Keys.CONTROL
 def start_post_in_group(driver):
    
         print_log("Post In Group...")

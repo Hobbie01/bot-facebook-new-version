@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager # type: ignore
 from selenium.webdriver.chrome.options import Options # type: ignore
 import undetected_chromedriver as uc
 import chromedriver_autoinstaller
+from services.comment import start_comment_in_post
 from utils.print_log import print_log
 from datetime import datetime
 from services.login_facebook import login
@@ -39,10 +40,10 @@ def bot_start(selected,config):
     status = True
     try:
         while status:
-            # if selected == "push":
-            #     start_comment_in_post(driver)
-            # elif selected == 'post':
-            start_post_in_group(driver)
+            if selected == "comment":
+                start_comment_in_post(driver)
+            elif selected == 'post':
+                start_post_in_group(driver)
             if config['repeat']:
                 hour = int(config['hour'])
                 minute = int(config['minute'])
