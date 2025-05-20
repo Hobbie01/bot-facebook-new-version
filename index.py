@@ -135,8 +135,7 @@ class Api:
 
 
     def start(self,selected,config):
-        print_log("API has started")
-        webview.windows[0].evaluate_js("addLog('✅ API has started')")
+        print_log("✅ API has started")
         bot_start(selected,config)
         
     def save_cookie(self, cookie):
