@@ -171,8 +171,8 @@ if __name__ == '__main__':
         title="Bot Facebook",
         url=resource_path(f"html/{page}"),
         js_api=api,
-        width=1200,
-        height=800,
-        resizable=False,
+        width=600,
+        height=600,
+        resizable=True,
     )
     webview.start()

@@ -16,14 +16,20 @@ def login(driver):
         for cookie in cookies:
             driver.add_cookie(cookie)
         driver.refresh()  # Refresh to apply cookies
-        current_url = driver.current_url
-        parsed_url = urlparse(current_url)
-        if  'login' in parsed_url.path:
-            print_log("Login failed, please check your cookies.")
-            return
-        print_log("Logged in successfully from cookies!")
+        # current_url = driver.current_url
+        # parsed_url = urlparse(current_url)
+        # if  'login' in parsed_url.path:
+        #     print_log("Login failed, please check your cookies.")
+        #     return
+        try:
+            driver.find_element(By.ID, 'login_form')
+            return False
+        except:
+            pass
+            print_log("เข้าสู่ระบบสำเร็จ!")
+            return True
     else:
-       print_log("Login failed, please check your cookies.")
+       return False
        
 def login_cookies(driver, cookie):
     

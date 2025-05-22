@@ -1,65 +1,162 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
   <head>
     <meta charset="UTF-8" />
-    <title>Index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ระบบจัดการคอมเมนต์ Facebook</title>
     <style>
+      :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --danger: #f72585;
+        --warning: #f8961e;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #adb5bd;
+        --gray-light: #dee2e6;
+        --gray-dark: #495057;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.2s ease-in-out;
+        --font-family: "Prompt", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+      }
+
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
       }
 
       body {
-        font-family: sans-serif;
-        background: #f0f2f5;
+        font-family: var(--font-family);
+        background: #f0f5ff;
+        color: var(--dark);
+        padding: 0;
         margin: 0;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
         padding: 1rem;
       }
 
-      h2 {
-        margin: 0.5rem 0;
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        box-shadow: var(--box-shadow);
+      }
+
+      .header-content {
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 500;
+      }
+
+      .main-content {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--gray-dark);
       }
 
       select,
       textarea,
-      input {
+      input[type="text"],
+      input[type="number"] {
         width: 100%;
-        padding: 0.4rem;
-        margin-bottom: 0.8rem;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 0.9rem;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--gray-light);
+        font-size: 1rem;
+        font-family: var(--font-family);
+        transition: var(--transition);
+        background-color: #fdfdfd;
+        text-transform: none;
+        -webkit-text-transform: none;
+        text-transform: none !important;
+      }
+
+      input,
+      textarea {
+        text-transform: none !important;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+      }
+
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      select:focus,
+      textarea:focus,
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
       }
 
       textarea {
-        height: 100px;
-        resize: none;
+        min-height: 120px;
+        resize: vertical;
       }
 
-      button {
-        padding: 0.6rem;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-        width: 100%;
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
       }
+
+      .checkbox-group label {
+        margin: 0 0 0 0.5rem;
+        font-weight: normal;
+      }
+
       input[type="checkbox"] {
         appearance: none;
-        width: 1.1rem;
-        height: 1.1rem;
-        border: 2px solid #ccc;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid var(--gray);
         border-radius: 4px;
-        display: inline-block;
         position: relative;
         cursor: pointer;
-        vertical-align: middle;
-        transition: all 0.2s ease-in-out;
+        transition: var(--transition);
       }
 
       input[type="checkbox"]:checked {
-        background-color: #007bff;
-        border-color: #007bff;
+        background-color: var(--primary);
+        border-color: var(--primary);
       }
 
       input[type="checkbox"]:checked::after {
@@ -74,75 +171,217 @@
         transform: rotate(45deg);
       }
 
-      #start-btn {
-        background: #28a745;
+      .repeat-options {
+        display: none;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--gray-light);
+      }
+
+      .repeat-options.active {
+        display: flex;
+      }
+
+      .repeat-options select {
+        flex: 1;
+      }
+
+      .btn {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        text-align: center;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
         color: white;
       }
 
-      #settings-open-btn {
-        background: #007bff;
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-success {
+        background: var(--success);
         color: white;
       }
 
-      #close-btn {
-        background: #f96666;
+      .btn-success:hover {
+        background: #3db8df;
+      }
+
+      .btn-danger {
+        background: var(--danger);
         color: white;
       }
 
-      #log {
-        background: rgb(17, 16, 16);
-        color: lime;
-        padding: 0.5rem;
-        height: 300px;
+      .btn-danger:hover {
+        background: #e51a76;
+      }
+
+      .btn-icon {
+        margin-right: 0.25rem;
+      }
+
+      .log-container {
+        background: #1e1e1e;
+        border-radius: var(--border-radius);
+        padding: 0.25rem;
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+      }
+
+      .log-header {
+        background: #333;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .log-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .log-content {
+        background: #1e1e1e;
+        color: #4cc9f0;
+        padding: 0.75rem;
+        height: 250px;
         overflow-y: auto;
-        font-size: 0.75rem;
-        border-radius: 5px;
-        margin-top: 0.5rem;
+        font-family: monospace;
+        font-size: 0.85rem;
+        white-space: pre-wrap;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
 
-      #settings-modal {
+      .modal {
         display: none;
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 2rem 1rem;
       }
 
       .modal-content {
         background: white;
-        margin: 5% auto;
-        padding: 1rem;
-        width: 95%;
-        max-width: 1000px;
-        border-radius: 10px;
+        border-radius: var(--border-radius);
+        max-width: 800px;
+        margin: 0 auto;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: modalFadeIn 0.3s ease-out;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: var(--transition);
+      }
+
+      .modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--gray-light);
+        text-align: right;
       }
 
       .tab-buttons {
         display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--gray-light);
+        margin-bottom: 1.5rem;
       }
 
-      .tab-buttons button {
-        flex: 1;
-        margin: 0 2px;
-        font-size: 0.8rem;
+      .tab-btn {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--gray-dark);
+        position: relative;
+        transition: var(--transition);
       }
 
-      .tab-buttons button.active {
-        background-color: #007bff;
-        color: white;
+      .tab-btn.active {
+        color: var(--primary);
       }
 
-      .table-wrapper {
-        max-height: 30vh;
-        height: 30vh;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 0.5rem;
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary);
+        border-radius: 3px 3px 0 0;
       }
 
       .form-section {
@@ -153,118 +392,347 @@
         display: block;
       }
 
-      #tableContainer {
-        max-height: 150px;
-        overflow: auto;
-        font-size: 0.75rem;
+      .keyword-comment-container {
+        border: 1px solid var(--gray-light);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: #f8f9fa;
+      }
+
+      .keyword-comment-pair {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        align-items: center;
+      }
+
+      .keyword-comment-pair input {
+        flex: 1;
+      }
+
+      .keyword-comment-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--gray-light);
+      }
+
+      .keyword-comment-title {
+        font-weight: 500;
+        color: var(--gray-dark);
+      }
+
+      .add-pair-btn {
+        background: var(--success);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: var(--transition);
+      }
+
+      .add-pair-btn:hover {
+        background: #3db8df;
+      }
+
+      .remove-pair-btn {
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        flex-shrink: 0;
+      }
+
+      .remove-pair-btn:hover {
+        background: #e51a76;
+      }
+
+      .table-wrapper {
+        border: 1px solid var(--gray-light);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        margin-top: 1.5rem;
+      }
+
+      .table-header {
+        background: #f8f9fa;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        border-bottom: 1px solid var(--gray-light);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .table-content {
+        max-height: 300px;
+        overflow-y: auto;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed;
       }
 
-      th,
+      th {
+        background: #f0f0f0;
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 500;
+        color: var(--gray-dark);
+        border-bottom: 1px solid var(--gray-light);
+      }
+
       td {
-        border: 1px solid #ccc;
-        padding: 4px;
-        word-wrap: break-word;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gray-light);
+        vertical-align: top;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
       }
 
       .action-btn {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
-        margin: 0 2px;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: var(--transition);
       }
 
-      .repeat-options {
-        display: none;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+      .action-btn:hover {
+        background: #e51a76;
       }
+
+      .keyword-comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .keyword-comment-list-item {
+        display: flex;
+        flex-direction: column;
+        padding: 0.25rem 0;
+      }
+
+      .keyword-highlight {
+        font-weight: 500;
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .keyword-comment-pair {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .remove-pair-btn {
+          align-self: flex-end;
+        }
+      }
+
+      @import url("https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap");
     </style>
   </head>
   <body>
-    <h2 style="text-align: center">ฟังก์ชั่น</h2>
-    <select id="function-select">
-      <!-- <option value="push">ดันโพสต์</option> -->
-      <option value="post">โพสต์</option>
-    </select>
-    <label>
-      <input type="checkbox" id="facebook-checkbox" />
-      แสดงหน้า Facebook
-    </label>
-    <label>
-      <input type="checkbox" id="repeat-checkbox" />
-      ทำงานซ้ำ
-    </label>
+    <header>
+      <div class="container header-content">
+        <h1>ระบบจัดการคอมเมนต์ Facebook</h1>
+      </div>
+    </header>
 
-    <div class="repeat-options" id="repeat-options">
-      <select id="repeat-hour">
-        <option value="">-- ชั่วโมง --</option>
-      </select>
-      <select id="repeat-minute">
-        <option value="">-- นาที --</option>
-      </select>
-    </div>
+    <main class="container">
+      <div class="main-content">
+        <div class="form-group">
+          <label for="function-select">เลือกฟังก์ชั่น</label>
+          <select id="function-select">
+            <option value="comment">คอมเมนต์หน้าเพจ</option>
+          </select>
+        </div>
 
-    <button id="start-btn">▶️ Start</button>
-    <button id="settings-open-btn">⚙️ Settings</button>
+        <div class="checkbox-group">
+          <input type="checkbox" id="facebook-checkbox" />
+          <label for="facebook-checkbox">แสดงหน้า Facebook</label>
+        </div>
 
-    <textarea id="cookie-box" placeholder="Cookies..."></textarea>
+        <div class="checkbox-group">
+          <input type="checkbox" id="repeat-checkbox" />
+          <label for="repeat-checkbox">ทำงานซ้ำ</label>
+        </div>
 
-    <div id="log">[Log จะอยู่ตรงนี้]</div>
+        <div class="repeat-options" id="repeat-options">
+          <select id="repeat-hour">
+            <option value="">-- ชั่วโมง --</option>
+          </select>
+          <select id="repeat-minute">
+            <option value="">-- นาที --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cookie-box">Cookies</label>
+          <textarea
+            id="cookie-box"
+            placeholder="กรุณาใส่ข้อมูล Cookies ที่นี่..."
+            autocapitalize="off"
+          ></textarea>
+        </div>
+
+        <button id="start-btn" class="btn btn-success">
+          <span class="btn-icon">▶️</span> เริ่มทำงาน
+        </button>
+
+        <button id="settings-open-btn" class="btn btn-primary">
+          <span class="btn-icon">⚙️</span> ตั้งค่าการทำงาน
+        </button>
+      </div>
+
+      <div class="log-container">
+        <div class="log-header">
+          <div class="log-title"><span>📝</span> บันทึกการทำงาน</div>
+        </div>
+        <div class="log-content" id="log">[Log จะอยู่ตรงนี้]</div>
+      </div>
+    </main>
 
     <!-- Settings Modal -->
-    <div id="settings-modal">
+    <div class="modal" id="settings-modal">
       <div class="modal-content">
-        <div class="tab-buttons">
-          <!-- <button onclick="showTab('push')">ดันโพสต์</button> -->
-          <button onclick="showTab('post')">โพสต์</button>
+        <div class="modal-header">
+          <div class="modal-title">ตั้งค่าการทำงาน</div>
+          <button class="modal-close" id="close-btn">×</button>
         </div>
 
-        <div class="form-section" id="push-tab">
-          <input type="text" placeholder="Link" id="p-group" />
-          <textarea placeholder="Comment" id="p-comment"></textarea>
-          <input type="text" placeholder="PATH รูปภาพ" id="p-image" />
-          <button onclick="saveConfig('push')">บันทึก</button>
-          <div class="table-wrapper">
-            <div id="push-table-container"></div>
+        <div class="modal-body">
+          <div class="tab-buttons">
+            <button data-tab="comment" class="tab-btn active">
+              คอมเมนต์หน้าเพจ
+            </button>
+          </div>
+
+          <div class="form-section active" id="comment-tab">
+            <div class="form-group">
+              <label for="cm-link">Link หน้าเพจที่ต้องการคอมเมนต์</label>
+              <input
+                type="text"
+                id="cm-link"
+                placeholder="เช่น https://www.facebook.com/example"
+                autocapitalize="off"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="cm-count">จำนวนครั้งที่ต้องการทำ</label>
+              <input
+                type="number"
+                id="cm-count"
+                placeholder="เช่น 10"
+                min="1"
+                value="1"
+              />
+            </div>
+
+            <div
+              class="keyword-comment-container"
+              id="keyword-comment-container"
+            >
+              <div class="keyword-comment-header">
+                <div class="keyword-comment-title">Keyword และ Comment</div>
+                <button id="add-pair-btn" class="add-pair-btn">
+                  <span>+</span> เพิ่มรายการ
+                </button>
+              </div>
+
+              <div class="keyword-comment-pair">
+                <input
+                  type="text"
+                  placeholder="Keyword"
+                  class="keyword-input"
+                  autocapitalize="off"
+                />
+                <input
+                  type="text"
+                  placeholder="Comment"
+                  class="comment-input"
+                  autocapitalize="off"
+                />
+                <input
+                  type="text"
+                  placeholder="image path"
+                  class="image-path-input"
+                  autocapitalize="off"
+                />
+                <button class="remove-pair-btn">×</button>
+              </div>
+            </div>
+
+            <button onclick="saveConfig('comment')" class="btn btn-primary">
+              <span class="btn-icon">💾</span> บันทึกการตั้งค่า
+            </button>
+
+            <div class="table-wrapper">
+              <div class="table-header"><span>📋</span> รายการที่บันทึกไว้</div>
+              <div class="table-content" id="comment-table-container"></div>
+            </div>
           </div>
         </div>
-
-        <div class="form-section" id="post-tab">
-          <input type="text" placeholder="Link" id="po-group" />
-          <textarea placeholder="Comment" id="po-comment"></textarea>
-          <input type="text" placeholder="PATH รูปภาพ" id="po-image" />
-          <button onclick="saveConfig('post')">บันทึก</button>
-          <div class="table-wrapper">
-            <div id="post-table-container"></div>
-          </div>
-        </div>
-
-        <button id="close-btn" onclick="modal.style.display = 'none'">
-          ❌ Close
-        </button>
       </div>
     </div>
 
-    <script defer>
+    <script>
+      // Define interfaces for our data
+      const data = {
+        comment: [],
+      };
+
+      // DOM Elements
       const logBox = document.getElementById("log");
       const modal = document.getElementById("settings-modal");
       const repeatCheckbox = document.getElementById("repeat-checkbox");
       const repeatOptions = document.getElementById("repeat-options");
       const facebookCheckbox = document.getElementById("facebook-checkbox");
+      const settingsOpenBtn = document.getElementById("settings-open-btn");
+      const startBtn = document.getElementById("start-btn");
+      const functionSelect = document.getElementById("function-select");
+      const cookieBox = document.getElementById("cookie-box");
+      const hourSelect = document.getElementById("repeat-hour");
+      const minuteSelect = document.getElementById("repeat-minute");
+      const closeBtn = document.getElementById("close-btn");
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      const addPairBtn = document.getElementById("add-pair-btn");
+      const keywordCommentContainer = document.getElementById(
+        "keyword-comment-container"
+      );
+      const cmCountInput = document.getElementById("cm-count");
 
-      const data = {
-        push: [],
-        post: [],
-      };
+      // Set the modal display to none by default
+      modal.style.display = "none";
 
-      document.getElementById("settings-open-btn").onclick = () => {
+      // Event Listeners
+      settingsOpenBtn.onclick = () => {
         modal.style.display = "block";
-        showTab("post");
+        showTab("comment");
         loadConfigFromPython();
       };
 
@@ -274,9 +742,60 @@
         }
       };
 
+      closeBtn.onclick = () => {
+        modal.style.display = "none";
+      };
+
       repeatCheckbox.addEventListener("change", () => {
         repeatOptions.style.display = repeatCheckbox.checked ? "flex" : "none";
+        if (repeatCheckbox.checked) {
+          repeatOptions.classList.add("active");
+        } else {
+          repeatOptions.classList.remove("active");
+        }
       });
+
+      // Set up tab button event listeners
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const tab = button.getAttribute("data-tab");
+          if (tab) {
+            showTab(tab);
+          }
+        });
+      });
+
+      // Add event listener for adding new keyword-comment pairs
+      addPairBtn.addEventListener("click", () => {
+        addKeywordCommentPair();
+      });
+
+      // Initial setup for removing pairs
+      setupRemovePairButtons();
+
+      startBtn.onclick = async () => {
+        const selected = functionSelect.value;
+        const cookie = cookieBox.value;
+
+        const repeat = repeatCheckbox.checked;
+        const hour = hourSelect.value;
+        const minute = minuteSelect.value;
+        const show = facebookCheckbox.checked;
+        const config = { repeat, hour, minute, show };
+
+        // Use our pywebview
+        const cookieResult = await pywebview.api.save_cookie(cookie);
+        if (!cookieResult) {
+          return;
+        }
+
+        addLog(
+          `เริ่มทำงาน: ${selected} (ทำซ้ำ: ${
+            repeat ? `ทุก ${hour || "0"}h ${minute || "0"}m` : "ไม่"
+          })`
+        );
+        pywebview.api.start(selected, config);
+      };
 
       function showTab(tab) {
         document
@@ -284,82 +803,194 @@
           .forEach((el) => el.classList.remove("active"));
 
         document
-          .querySelectorAll(".tab-buttons button")
+          .querySelectorAll(".tab-btn")
           .forEach((btn) => btn.classList.remove("active"));
 
-        document.getElementById(tab + "-tab").classList.add("active");
+        document.getElementById(tab + "-tab")?.classList.add("active");
 
         const activeBtn = Array.from(
-          document.querySelectorAll(".tab-buttons button")
-        ).find(
-          (btn) =>
-            btn.textContent.trim() === (tab === "push" ? "ดันโพสต์" : "โพสต์")
-        );
+          document.querySelectorAll(".tab-btn")
+        ).find((btn) => btn.getAttribute("data-tab") === tab);
         if (activeBtn) activeBtn.classList.add("active");
       }
 
+      // Function to add a new keyword-comment pair
+      function addKeywordCommentPair(
+        keyword = "",
+        comment = "",
+        imagePath = ""
+      ) {
+        const pairDiv = document.createElement("div");
+        pairDiv.className = "keyword-comment-pair";
+
+        const keywordInput = document.createElement("input");
+        keywordInput.type = "text";
+        keywordInput.className = "keyword-input";
+        keywordInput.placeholder = "Keyword";
+        keywordInput.value = keyword;
+
+        const commentInput = document.createElement("input");
+        commentInput.type = "text";
+        commentInput.className = "comment-input";
+        commentInput.placeholder = "Comment";
+        commentInput.value = comment;
+
+        const imageInput = document.createElement("input");
+        imageInput.type = "text";
+        imageInput.className = "image-path-input";
+        imageInput.placeholder = "Image Path";
+        imageInput.value = imagePath;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-pair-btn";
+        removeBtn.textContent = "×";
+        removeBtn.addEventListener("click", function () {
+          pairDiv.remove();
+        });
+
+        pairDiv.appendChild(keywordInput);
+        pairDiv.appendChild(commentInput);
+        pairDiv.appendChild(imageInput);
+        pairDiv.appendChild(removeBtn);
+
+        keywordCommentContainer.appendChild(pairDiv);
+      }
+
+      // Setup event listeners for removing pairs
+      function setupRemovePairButtons() {
+        document.querySelectorAll(".remove-pair-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            this.closest(".keyword-comment-pair")?.remove();
+          });
+        });
+      }
+
+      // Expose to window for HTML inline event handlers
       function saveConfig(type) {
         const id =
           data[type].length > 0 ? data[type][data[type].length - 1].id + 1 : 1;
-        let entry;
 
-        if (type === "push") {
-          entry = {
-            id,
-            type,
-            post: document.getElementById("p-group").value,
-            comment: document.getElementById("p-comment").value,
-            image: document.getElementById("p-image").value,
-          };
-        } else {
-          entry = {
-            id,
-            type,
-            group: document.getElementById("po-group").value,
-            comment: document.getElementById("po-comment").value,
-            image: document.getElementById("po-image").value,
-          };
+        // Get all keyword-comment pairs
+        const pairs = [];
+        const pairElements = document.querySelectorAll(".keyword-comment-pair");
+
+        pairElements.forEach((element) => {
+          const keywordInput = element.querySelector(".keyword-input");
+          const commentInput = element.querySelector(".comment-input");
+          const imageInput = element.querySelector(".image-path-input");
+          if (
+            keywordInput &&
+            commentInput &&
+            imageInput &&
+            keywordInput.value.trim() &&
+            commentInput.value.trim() &&
+            imageInput.value.trim()
+          ) {
+            pairs.push({
+              keyword: keywordInput.value.trim(),
+              comment: commentInput.value.trim(),
+              imagePath: imageInput.value.trim(),
+            });
+          }
+        });
+
+        // Get count value
+        const countInput = document.getElementById("cm-count");
+        let count = 1;
+        if (countInput && countInput.value) {
+          count = parseInt(countInput.value, 10);
+          if (isNaN(count) || count < 1) count = 1;
+        }
+
+        // Create the config entry
+        const entry = {
+          id,
+          type,
+          link: document.getElementById("cm-link").value.trim(),
+          count: count,
+          content: pairs,
+        };
+
+        if (!entry.link) {
+          addLog("กรุณาใส่ Link หน้าเพจ");
+          return;
+        }
+
+        if (entry.content.length === 0) {
+          addLog("กรุณาเพิ่ม Keyword และ Comment อย่างน้อย 1 รายการ");
+          return;
         }
 
         data[type].push(entry);
         renderTable(type);
 
-        // clear form
-        ["group", "post", "comment", "image"].forEach((key) => {
-          const el =
-            document.getElementById(`${type[0]}o-${key}`) ||
-            document.getElementById(`${type[0]}-${key}`);
-          if (el) el.value = "";
-        });
+        // Clear form
+        document.getElementById("cm-link").value = "";
+        if (countInput) countInput.value = "1";
 
-        if (window.pywebview) {
-          window.pywebview.api.save_config(entry);
+        // Remove all keyword-comment pairs except the first one
+        const pairs2 = document.querySelectorAll(".keyword-comment-pair");
+        for (let i = 1; i < pairs2.length; i++) {
+          pairs2[i].remove();
         }
+
+        // Clear the first pair inputs
+        if (pairs2.length > 0) {
+          const firstPair = pairs2[0];
+          firstPair.querySelector(".keyword-input").value = "";
+          firstPair.querySelector(".comment-input").value = "";
+          firstPair.querySelector(".image-path-input").value = "";
+        }
+
+        // Save to Python backend
+        pywebview.api.save_config(entry);
+
+        // Add a log entry for saving config
+        addLog(`บันทึกข้อมูล ${type} สำเร็จ (ID: ${id}, จำนวนครั้ง: ${count})`);
+      }
+
+      function del(type, idx, id) {
+        data[type].splice(parseInt(idx), 1);
+        renderTable(type);
+
+        // Delete from Python backend
+        pywebview.api.delete_config(parseInt(id), type);
+
+        // Add a log entry for deleting config
+        addLog(`ลบข้อมูล ${type} สำเร็จ (ID: ${id})`);
       }
 
       function renderTable(type) {
         const container = document.getElementById(`${type}-table-container`);
-        const items = data[type].map(({ type, ...rest }) => rest);
+        if (!container) return;
 
-        if (items.length === 0) {
+        if (data[type].length === 0) {
           container.innerHTML =
-            "<p style='font-size: 0.75rem;'>ไม่มีข้อมูล</p>";
+            "<p style='padding: 1rem; text-align: center; color: var(--gray);'>ไม่มีข้อมูล</p>";
           return;
         }
 
         let html = "<table><tr>";
+        html +=
+          "<th width='60px'>ID</th><th>Link</th><th>จำนวนครั้ง</th><th>รายละเอียด</th>";
+        html += "<th style='width: 80px;'>จัดการ</th></tr>";
 
-        Object.keys(items[0]).forEach((key) => {
-          if (key !== "id") html += `<th>${key}</th>`;
-        });
-
-        html += "<th style='width: 60px;'>จัดการ</th></tr>";
-
-        items.forEach((item, idx) => {
+        data[type].forEach((item, idx) => {
           html += "<tr>";
-          Object.entries(item).forEach(([key, val]) => {
-            if (key !== "id") html += `<td>${val}</td>`;
-          });
+          html += `<td>${item.id}</td>`;
+          html += `<td>${item.link || ""}</td>`;
+          html += `<td>${item.count !== undefined ? item.count : 1}</td>`;
+
+          // Format content pairs
+          let pairsHtml = '<div class="keyword-comment-list">';
+          if (item.content && item.content.length > 0) {
+            item.content.forEach((pair) => {
+              pairsHtml += `<div class="keyword-comment-list-item"><span class="keyword-highlight">${pair.keyword}</span>: ${pair.comment}</div>`;
+            });
+          }
+          pairsHtml += "</div>";
+
+          html += `<td>${pairsHtml || ""}</td>`;
           html += `<td><button class="action-btn" onclick="del('${type}','${idx}','${item.id}')">ลบ</button></td></tr>`;
         });
 
@@ -367,72 +998,73 @@
         container.innerHTML = html;
       }
 
-      function del(type, idx, id) {
-        data[type].splice(idx, 1);
-        renderTable(type);
-        if (window.pywebview) {
-          window.pywebview.api.delete_config(id, type);
-        }
-      }
-
       async function loadConfigFromPython() {
-        if (window.pywebview) {
-          const allData = await window.pywebview.api.get_all();
-          data.comment = allData.filter((d) => d.type === "comment");
-          data.push = allData.filter((d) => d.type === "push");
-          data.post = allData.filter((d) => d.type === "post");
+        try {
+          const allData = await pywebview.api.get_all();
 
-          renderTable("push");
-          renderTable("post");
+          // Clear existing data
+          data.comment = [];
+
+          // Process and filter the data
+          if (Array.isArray(allData)) {
+            data.comment = allData.filter((d) => d.type === "comment");
+          }
+
+          renderTable("comment");
+
+          // Add a log entry
+          addLog("โหลดข้อมูลสำเร็จ");
+        } catch (error) {
+          console.error("Error loading config:", error);
+          addLog("เกิดข้อผิดพลาดในการโหลดข้อมูล");
         }
       }
 
       function addLog(msg) {
-        const now = new Date().toLocaleString();
-        logBox.innerText += `\n[${now}] ${msg}`;
+        const now = new Date().toLocaleString("th-TH");
+        logBox.innerHTML += `<div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding: 4px 0;"><span style="color: #aaa;">[${now}]</span> ${msg}</div>`;
         logBox.scrollTop = logBox.scrollHeight;
       }
+
       function populateTimeDropdowns() {
-        const hourSelect = document.getElementById("repeat-hour");
-        const minuteSelect = document.getElementById("repeat-minute");
+        hourSelect.innerHTML = '<option value="">-- ชั่วโมง --</option>';
+        minuteSelect.innerHTML = '<option value="">-- นาที --</option>';
 
         for (let h = 0; h < 24; h++) {
           const option = document.createElement("option");
-          option.value = h;
-          option.textContent = h;
+          option.value = h.toString();
+          option.textContent = h.toString();
           hourSelect.appendChild(option);
         }
 
         for (let m = 0; m < 60; m++) {
           const option = document.createElement("option");
-          option.value = m;
-          option.textContent = m;
+          option.value = m.toString();
+          option.textContent = m.toString();
           minuteSelect.appendChild(option);
         }
       }
 
-      document.addEventListener("DOMContentLoaded", populateTimeDropdowns);
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        populateTimeDropdowns();
+        setupRemovePairButtons();
 
-      document.getElementById("start-btn").onclick = async () => {
-        const selected = document.getElementById("function-select").value;
-        const cookie = document.getElementById("cookie-box").value;
-
-        const repeat = repeatCheckbox.checked;
-        const hour = document.getElementById("repeat-hour").value;
-        const minute = document.getElementById("repeat-minute").value;
-        const show = facebookCheckbox.checked;
-        const config = { repeat, hour, minute, show };
-
+        // Load config data on page load if Python WebView is available
         if (window.pywebview) {
-          const checkCookies = await window.pywebview.api.save_cookie(cookie);
-          addLog(
-            `Start ${selected} (Repeat: ${
-              repeat ? `${hour}h ${minute}m` : "No"
-            })`
-          );
-          window.pywebview.api.start(selected, config);
+          loadConfigFromPython();
         }
-      };
+      });
+
+      populateTimeDropdowns(); // Call directly as well, since we might load after DOMContentLoaded
+
+      // Initial log entry
+      addLog("ระบบพร้อมใช้งาน");
+
+      // Export functions for pywebview callbacks
+      window.addLog = addLog;
+      window.saveConfig = saveConfig;
+      window.del = del;
     </script>
   </body>
 </html>
