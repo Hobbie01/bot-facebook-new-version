@@ -35,7 +35,7 @@ def save_link_log(link):
 
     if link not in log[today] and not is_limit_reached():
         log[today].append(link)
-        # save_log(log)
+        save_log(log)
         print_log(f"บันทึกลิงก์แล้ว: {link}")
         return True
     else:

@@ -8,10 +8,7 @@ import chromedriver_autoinstaller
 from services.comment_page import start_comment_in_page
 from utils.print_log import print_log
 from datetime import datetime
-from services.login_facebook import login
 
-# from services.comment_in_post import start_comment_in_post
-from services.post_in_group import start_post_in_group
 import time
 
 def bot_start(selected,config): 
@@ -36,13 +33,9 @@ def bot_start(selected,config):
     driver = uc.Chrome(options=options)
     driver.set_window_size(600, 800)
     print_log("Starting the bot...")
-    # login(driver)
     status = True
     try:
         while status:
-            # if selected == "push":
-            #     start_comment_in_post(driver)
-            # elif selected == 'post':
             start_comment_in_page(driver)
             if config['repeat']:
                 hour = int(config['hour'])
