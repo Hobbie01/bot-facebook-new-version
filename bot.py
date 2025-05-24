@@ -53,6 +53,7 @@ def bot_start(selected,config):
 
             else:
                 print_log("Stopping the bot...")
+                driver.quit()  # Close the browser
                 status = False
     except KeyboardInterrupt:
         print_log("\n🛑 Program stopped!")

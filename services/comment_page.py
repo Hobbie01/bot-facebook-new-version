@@ -26,12 +26,12 @@ def start_comment_in_page(driver):
         link_page = row["link"]
         count = row["count"]
         contents = row["content"]  # array ของ {keyword, comment}
-        driver.get(link_page)
         if not login(driver):
             print_log("เข้าสู่ระบบไม่สำเร็จ")
             return 
+        driver.get(link_page)
 
-        for _ in range(2):
+        for _ in range(int(count/3)):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
         print_log("ทำการโหลดหน้าเพจ สำเร็จ")
@@ -65,15 +65,17 @@ def start_comment_in_page(driver):
                 pass
 
             text = container.text
-            if not text.strip():
+            clean_text = re.sub(r"ตัวบ่งชี้สถานะออนไลน์.*?·\n?", "", text, flags=re.DOTALL)
+            clean_text = clean_text.split("ความรู้สึกทั้งหมด")[0]
+            if not clean_text.strip():
                 print_log("ไม่เจอข้อความโพสต์")
                 continue
-
+            print_log(f"ข้อความโพสต์: {clean_text}")
             for content in contents:
                 keyword = content["keyword"]
                 comment = content["comment"]
                 image = content["imagePath"]
-                if keyword in text:
+                if keyword in clean_text:
                     try:
                         link_element = post.find_element(By.XPATH, './/a')
                         link = clean_facebook_link(link_element.get_attribute('href'))
@@ -87,12 +89,15 @@ def start_comment_in_page(driver):
 
                         # คลิกปุ่มคอมเมนต์
                         comment_button = container.find_element(By.XPATH, './/span[@data-ad-rendering-role="comment_button"]')
-                        comment_button.click()
+                        # comment_button.click()
+                        driver.execute_script("arguments[0].click();", comment_button)
+
                         time.sleep(2)
 
                         actions = ActionChains(driver)
                         print_log("กำลังพิมพ์คอมเมนต์...")
-                        upload_image(driver,image)
+                        if image and image.strip():
+                                        upload_image(driver, image)
                         sub_lines = comment.split("\n")
                         for sub_line in sub_lines:
                                 actions.send_keys(sub_line).perform()

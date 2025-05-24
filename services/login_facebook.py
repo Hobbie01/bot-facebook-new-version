@@ -9,6 +9,7 @@ from utils.print_log import print_log
 
 def login(driver):
     # If cookies exist, use them
+    driver.get("https://www.facebook.com/")
     if os.path.exists('facebook_cookies.json'):
         print_log("Found saved cookies, loading...")
         with open('facebook_cookies.json', 'r') as file:
