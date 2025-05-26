@@ -84,12 +84,11 @@ def start_comment_in_page(driver):
                             keyword = content["keyword"]
                             comment = content["comment"]
                             image = content["imagePath"]
-                            print_log(f"กำลังตรวจสอบ keyword: '{keyword}'")
+                            # print_log(f"กำลังตรวจสอบ keyword: '{keyword}'")
                             if keyword in clean_text:
                                 try:
                                     
                                     if not save_link_log(link):
-                                        print_log(f"โพสต์นี้เคยคอมเมนต์แล้ว: {link}")
                                         continue
                                     print_log(f"ข้อความโพสต์: {clean_text}")
                                     print_log(f"เจอ keyword: '{keyword}' ในโพสต์")
