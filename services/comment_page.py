@@ -17,15 +17,16 @@ from utils.print_log import print_log
 from utils.save_log import clean_facebook_link, is_limit_reached, save_link_log
 
 
-def start_comment_in_page(driver):
+def start_comment_in_page(driver, config=None):
     try:
         seen_posts = set()
         print_log("Comment In Page...")
         data = read_json_by_type("comment")
+        daily_limit = config.get('dailyLimit', 30) if config else 30
 
         for row in data:
-            if is_limit_reached():
-                print_log("ถึงขีดจำกัดการบันทึกในวันนี้แล้ว")
+            if is_limit_reached(daily_limit):
+                print_log(f"ถึงขีดจำกัด {daily_limit} ครั้งต่อวันแล้ว")
                 break
             i = 0
             link_page = row["link"]
@@ -88,7 +89,7 @@ def start_comment_in_page(driver):
                             if keyword in clean_text:
                                 try:
                                     
-                                    if not save_link_log(link):
+                                    if not save_link_log(link, daily_limit):
                                         continue
                                     print_log(f"ข้อความโพสต์: {clean_text}")
                                     print_log(f"เจอ keyword: '{keyword}' ในโพสต์")

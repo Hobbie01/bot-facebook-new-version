@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from utils.print_log import print_log
 
 LOG_PATH = "log.json"
-DAILY_LIMIT = 30
+DEFAULT_DAILY_LIMIT = 30
 
 def load_log(log_path=LOG_PATH):
     if os.path.exists(log_path):
@@ -21,11 +21,10 @@ def save_log(log, log_path=LOG_PATH):
 def get_today_key():
     return datetime.now().strftime("%Y-%m-%d")
 
-def is_limit_reached():
+def is_limit_reached(daily_limit=DEFAULT_DAILY_LIMIT):
     log = load_log()
     today = get_today_key()
-    return len(log.get(today, [])) >= DAILY_LIMIT
-
+    return len(log.get(today, [])) >= daily_limit
 
 def is_duplicate_across_days(log, link):
     for day_links in log.values():
@@ -33,7 +32,7 @@ def is_duplicate_across_days(log, link):
             return True
     return False
 
-def save_link_log(link):
+def save_link_log(link, daily_limit=DEFAULT_DAILY_LIMIT):
     log = load_log()
     today = get_today_key()
 
@@ -44,13 +43,13 @@ def save_link_log(link):
         print_log(f"ข้ามลิงก์นี้ (เคยบันทึกไว้ในวันก่อนๆ แล้ว): {link}")
         return False
 
-    if not is_limit_reached():
+    if not is_limit_reached(daily_limit):
         log[today].append(link)
         save_log(log)
         print_log(f"บันทึกลิงก์แล้ว: {link}")
         return True
     else:
-        print_log(f"ถึงขีดจำกัด 20 ลิงก์แล้วสำหรับวันนี้: {link}")
+        print_log(f"ถึงขีดจำกัด {daily_limit} ลิงก์แล้วสำหรับวันนี้: {link}")
         return False
 
 def clean_facebook_link(link: str) -> str:

@@ -8,7 +8,7 @@ def upload_image(driver,image):
         file_inputs = driver.find_elements(By.XPATH, '//input[@type="file"]')
         file_input = file_inputs[-1]
         file_input.send_keys(image)
-        # time.sleep(20)
+        time.sleep(20)
         print_log("Upload image success")
     except:
         print_log("upload image fail")

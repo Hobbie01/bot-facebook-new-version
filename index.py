@@ -201,11 +201,11 @@ class Api:
                 print_log("File was not saved successfully")
                 raise ValueError("Failed to save image file")
             
-            # Return the relative path that will be stored in the config
-            relative_path = os.path.join(IMAGE_DIR, new_filename)
-            print_log(f"Image saved successfully. Relative path: {relative_path}")
+            # Return the absolute path using resource_path
+            absolute_path = resource_path(os.path.join(IMAGE_DIR, new_filename))
+            print_log(f"Image saved successfully. Absolute path: {absolute_path}")
             
-            return {"path": relative_path}
+            return {"path": absolute_path}
         except Exception as e:
             print_log(f"Error in upload_image: {str(e)}")
             return None

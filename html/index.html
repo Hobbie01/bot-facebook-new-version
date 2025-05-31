@@ -717,7 +717,7 @@
         </div>
 
         <div class="checkbox-group">
-          <input type="checkbox" id="facebook-checkbox" />
+          <input type="checkbox" id="facebook-checkbox" checked />
           <label for="facebook-checkbox">แสดงหน้า Facebook</label>
         </div>
 
@@ -742,6 +742,17 @@
             placeholder="กรุณาใส่ข้อมูล Cookies ที่นี่..."
             autocapitalize="off"
           ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="daily-limit">จำนวนครั้งที่ทำต่อวัน</label>
+          <input
+            type="number"
+            id="daily-limit"
+            placeholder="เช่น 30"
+            min="1"
+            value="30"
+          />
         </div>
 
         <button id="start-btn" class="btn btn-success">
@@ -933,12 +944,14 @@
       startBtn.onclick = async () => {
         const selected = functionSelect.value;
         const cookie = cookieBox.value;
+        const dailyLimit =
+          parseInt(document.getElementById("daily-limit").value) || 30;
 
         const repeat = repeatCheckbox.checked;
         const hour = hourSelect.value;
         const minute = minuteSelect.value;
         const show = facebookCheckbox.checked;
-        const config = { repeat, hour, minute, show };
+        const config = { repeat, hour, minute, show, dailyLimit };
 
         // Use our pywebview
         const cookieResult = await pywebview.api.save_cookie(cookie);
@@ -949,7 +962,7 @@
         addLog(
           `เริ่มทำงาน: ${selected} (ทำซ้ำ: ${
             repeat ? `ทุก ${hour || "0"}h ${minute || "0"}m` : "ไม่"
-          })`
+          }, จำนวนครั้งต่อวัน: ${dailyLimit})`
         );
         pywebview.api.start(selected, config);
       };

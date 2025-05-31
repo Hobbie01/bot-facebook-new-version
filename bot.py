@@ -36,7 +36,7 @@ def bot_start(selected,config):
     status = True
     try:
         while status:
-            start_comment_in_page(driver)
+            start_comment_in_page(driver, config)
             if config['repeat']:
                 hour = int(config['hour'])
                 minute = int(config['minute'])
