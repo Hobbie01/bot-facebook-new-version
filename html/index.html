@@ -408,6 +408,67 @@
         align-items: start;
       }
 
+      .image-upload-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .image-preview {
+        width: 100%;
+        height: 100px;
+        border: 1px dashed var(--gray-light);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+
+      .image-preview img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .image-preview.placeholder {
+        color: var(--gray);
+        font-size: 0.875rem;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .file-input-button {
+        width: 100%;
+        padding: 0.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.875rem;
+        text-align: center;
+        transition: var(--transition);
+      }
+
+      .file-input-button:hover {
+        background: var(--primary-dark);
+      }
+
       .keyword-comment-pair input[type="text"]:not(.comment-input) {
         flex: 1;
       }
@@ -760,12 +821,25 @@
                   class="comment-input"
                   autocapitalize="off"
                 ></textarea>
-                <input
-                  type="text"
-                  placeholder="image path"
-                  class="image-path-input"
-                  autocapitalize="off"
-                />
+                <div class="image-upload-container">
+                  <div
+                    class="image-preview placeholder"
+                    data-preview-id="preview-0"
+                  >
+                    เลือกรูปภาพ
+                  </div>
+                  <div class="file-input-wrapper">
+                    <button class="file-input-button">เลือกไฟล์</button>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      class="image-file-input"
+                      data-input-id="input-0"
+                      onchange="handleImageUpload(this)"
+                    />
+                  </div>
+                  <input type="hidden" class="image-path-input" value="" />
+                </div>
                 <button class="remove-pair-btn">×</button>
               </div>
             </div>
@@ -905,6 +979,7 @@
       ) {
         const pairDiv = document.createElement("div");
         pairDiv.className = "keyword-comment-pair";
+        const pairId = Date.now(); // Unique ID for this pair
 
         const keywordInput = document.createElement("input");
         keywordInput.type = "text";
@@ -917,11 +992,46 @@
         commentInput.placeholder = "Comment (สามารถพิมพ์ข้อความยาวได้)";
         commentInput.value = comment;
 
-        const imageInput = document.createElement("input");
-        imageInput.type = "text";
-        imageInput.className = "image-path-input";
-        imageInput.placeholder = "Image Path";
-        imageInput.value = imagePath;
+        const imageContainer = document.createElement("div");
+        imageContainer.className = "image-upload-container";
+
+        const preview = document.createElement("div");
+        preview.className = "image-preview placeholder";
+        preview.setAttribute("data-preview-id", `preview-${pairId}`);
+
+        if (imagePath) {
+          preview.innerHTML = `<img src="file://${imagePath}" alt="Preview">`;
+          preview.classList.remove("placeholder");
+        } else {
+          preview.textContent = "เลื่อนรูปภาพ";
+        }
+
+        const fileInputWrapper = document.createElement("div");
+        fileInputWrapper.className = "file-input-wrapper";
+
+        const fileButton = document.createElement("button");
+        fileButton.className = "file-input-button";
+        fileButton.textContent = "เลือกไฟล์";
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.className = "image-file-input";
+        fileInput.setAttribute("data-input-id", `input-${pairId}`);
+        fileInput.onchange = function () {
+          handleImageUpload(this);
+        };
+
+        const pathInput = document.createElement("input");
+        pathInput.type = "hidden";
+        pathInput.className = "image-path-input";
+        pathInput.value = imagePath;
+
+        fileInputWrapper.appendChild(fileButton);
+        fileInputWrapper.appendChild(fileInput);
+        imageContainer.appendChild(preview);
+        imageContainer.appendChild(fileInputWrapper);
+        imageContainer.appendChild(pathInput);
 
         const removeBtn = document.createElement("button");
         removeBtn.className = "remove-pair-btn";
@@ -932,7 +1042,7 @@
 
         pairDiv.appendChild(keywordInput);
         pairDiv.appendChild(commentInput);
-        pairDiv.appendChild(imageInput);
+        pairDiv.appendChild(imageContainer);
         pairDiv.appendChild(removeBtn);
 
         keywordCommentContainer.appendChild(pairDiv);
@@ -949,6 +1059,8 @@
 
       // Expose to window for HTML inline event handlers
       async function saveConfig(type) {
+        console.log("Starting saveConfig..."); // Debug log
+
         const isEditing =
           window.editingConfig && window.editingConfig.type === type;
         const id = isEditing
@@ -961,21 +1073,31 @@
         const pairs = [];
         const pairElements = document.querySelectorAll(".keyword-comment-pair");
 
-        pairElements.forEach((element) => {
+        pairElements.forEach((element, index) => {
           const keywordInput = element.querySelector(".keyword-input");
           const commentInput = element.querySelector(".comment-input");
-          const imageInput = element.querySelector(".image-path-input");
+          const imagePathInput = element.querySelector(".image-path-input");
+
+          console.log(`Pair ${index + 1}:`, {
+            // Debug log
+            keyword: keywordInput?.value,
+            comment: commentInput?.value,
+            imagePath: imagePathInput?.value,
+          });
+
           if (
             keywordInput &&
             commentInput &&
             keywordInput.value.trim() &&
             commentInput.value.trim()
           ) {
-            pairs.push({
+            const pair = {
               keyword: keywordInput.value.trim(),
               comment: commentInput.value.trim(),
-              imagePath: imageInput.value.trim(),
-            });
+              imagePath: imagePathInput ? imagePathInput.value.trim() : "",
+            };
+            console.log(`Adding pair ${index + 1}:`, pair); // Debug log
+            pairs.push(pair);
           }
         });
 
@@ -1057,7 +1179,15 @@
             const firstPair = pairs2[0];
             firstPair.querySelector(".keyword-input").value = "";
             firstPair.querySelector(".comment-input").value = "";
-            firstPair.querySelector(".image-path-input").value = "";
+            const imagePathInput = firstPair.querySelector(".image-path-input");
+            if (imagePathInput) imagePathInput.value = "";
+
+            // Reset image preview
+            const preview = firstPair.querySelector(".image-preview");
+            if (preview) {
+              preview.innerHTML = "เลื่อนรูปภาพ";
+              preview.classList.add("placeholder");
+            }
           }
 
           // Reset save button text
@@ -1279,6 +1409,83 @@
       window.saveConfig = saveConfig;
       window.del = del;
       window.editConfig = editConfig;
+
+      // Add these new functions for image handling
+      async function handleImageUpload(input) {
+        const file = input.files[0];
+        if (!file) {
+          addLog("ไม่พบไฟล์รูปภาพ");
+          return;
+        }
+
+        addLog(`กำลังอัพโหลดรูปภาพ: ${file.name}`);
+
+        // Show preview
+        const previewId = input
+          .getAttribute("data-input-id")
+          .replace("input-", "preview-");
+        const preview = document.querySelector(
+          `[data-preview-id="${previewId}"]`
+        );
+        const reader = new FileReader();
+
+        // Convert file to base64
+        reader.onload = async function (e) {
+          const base64Data = e.target.result;
+          preview.innerHTML = `<img src="${base64Data}" alt="Preview">`;
+          preview.classList.remove("placeholder");
+
+          // Upload to Python backend
+          try {
+            addLog("กำลังส่งไฟล์ไปยังเซิร์ฟเวอร์...");
+
+            // Send base64 data to Python backend
+            const result = await pywebview.api.upload_image({
+              filename: file.name,
+              data: base64Data.split(",")[1], // Remove the "data:image/jpeg;base64," prefix
+            });
+
+            console.log("Upload result:", result); // Debug log
+
+            if (result && result.path) {
+              // Update hidden input with the saved path
+              const pathInput = input
+                .closest(".image-upload-container")
+                .querySelector(".image-path-input");
+              if (pathInput) {
+                pathInput.value = result.path;
+                // Trigger change event to ensure the value is updated
+                pathInput.dispatchEvent(new Event("change", { bubbles: true }));
+                addLog(`อัพโหลดรูปภาพสำเร็จ: ${result.path}`);
+
+                // Debug log to verify the path is set
+                console.log("Image path set to:", pathInput.value);
+              } else {
+                throw new Error("ไม่พบ input สำหรับเก็บ path รูปภาพ");
+              }
+            } else {
+              console.error("Upload failed:", result); // Debug log
+              throw new Error("ไม่สามารถอัพโหลดรูปภาพได้");
+            }
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            addLog(`เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ: ${error.message}`);
+            preview.innerHTML = "เลื่อนรูปภาพ";
+            preview.classList.add("placeholder");
+
+            // Clear the path input if there was an error
+            const pathInput = input
+              .closest(".image-upload-container")
+              .querySelector(".image-path-input");
+            if (pathInput) {
+              pathInput.value = "";
+              console.log("Cleared image path due to error"); // Debug log
+            }
+          }
+        };
+
+        reader.readAsDataURL(file);
+      }
     </script>
   </body>
 </html>

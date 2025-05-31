@@ -9,12 +9,18 @@ import hmac
 import hashlib
 import os
 import sys
+import shutil
+from datetime import datetime
+import base64
 
 SECRET_KEY = "mysecretkey"  # Secret Key ที่ใช้ในการสร้าง HMAC
 CODE_FILE = 'login_code.json'
 CONFIG_FILE = 'user_config.json'
+IMAGE_DIR = 'images'  # Directory to store uploaded images
 
-
+# Create images directory if it doesn't exist
+if not os.path.exists(IMAGE_DIR):
+    os.makedirs(IMAGE_DIR)
 
 def resource_path(relative_path):
     try:
@@ -155,7 +161,55 @@ class Api:
             webview.windows[0].evaluate_js("addLog('❌ Invalid cookie format')")
             return False
    
-       
+    def upload_image(self, data):
+        try:
+            if not data or 'filename' not in data or 'data' not in data:
+                print_log("Invalid image data received")
+                raise ValueError("Invalid image data")
+
+            filename = data['filename']
+            base64_data = data['data']
+            
+            print_log(f"Received image: {filename}")
+
+            # Generate unique filename using timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_ext = os.path.splitext(filename)[1]
+            new_filename = f"{timestamp}{file_ext}"
+            
+            # Full path where the image will be saved
+            save_path = os.path.join(os.path.abspath(IMAGE_DIR), new_filename)
+            print_log(f"Attempting to save image to: {save_path}")
+            
+            # Ensure the images directory exists
+            if not os.path.exists(IMAGE_DIR):
+                os.makedirs(IMAGE_DIR)
+                print_log(f"Created images directory at: {os.path.abspath(IMAGE_DIR)}")
+            
+            # Decode and save the file
+            try:
+                image_data = base64.b64decode(base64_data)
+                with open(save_path, 'wb') as f:
+                    f.write(image_data)
+                print_log(f"Successfully wrote image to: {save_path}")
+            except Exception as write_error:
+                print_log(f"Error writing file: {str(write_error)}")
+                raise
+            
+            # Verify the file was saved
+            if not os.path.exists(save_path):
+                print_log("File was not saved successfully")
+                raise ValueError("Failed to save image file")
+            
+            # Return the relative path that will be stored in the config
+            relative_path = os.path.join(IMAGE_DIR, new_filename)
+            print_log(f"Image saved successfully. Relative path: {relative_path}")
+            
+            return {"path": relative_path}
+        except Exception as e:
+            print_log(f"Error in upload_image: {str(e)}")
+            return None
+
 api = Api()
 
 
