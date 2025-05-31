@@ -892,9 +892,14 @@
       }
 
       // Expose to window for HTML inline event handlers
-      function saveConfig(type) {
-        const id =
-          data[type].length > 0 ? data[type][data[type].length - 1].id + 1 : 1;
+      async function saveConfig(type) {
+        const isEditing =
+          window.editingConfig && window.editingConfig.type === type;
+        const id = isEditing
+          ? window.editingConfig.id
+          : data[type].length > 0
+          ? data[type][data[type].length - 1].id + 1
+          : 1;
 
         // Get all keyword-comment pairs
         const pairs = [];
@@ -945,32 +950,83 @@
           return;
         }
 
-        data[type].push(entry);
-        renderTable(type);
+        try {
+          if (isEditing) {
+            // Delete old config from Python backend first
+            await pywebview.api.delete_config(window.editingConfig.id, type);
+            addLog(`ลบข้อมูลเก่า ID: ${window.editingConfig.id} สำเร็จ`);
 
-        // Clear form
-        document.getElementById("cm-link").value = "";
-        if (countInput) countInput.value = "1";
+            // Update existing entry
+            data[type][window.editingConfig.idx] = entry;
 
-        // Remove all keyword-comment pairs except the first one
-        const pairs2 = document.querySelectorAll(".keyword-comment-pair");
-        for (let i = 1; i < pairs2.length; i++) {
-          pairs2[i].remove();
+            // Save new config to Python backend
+            const saveResult = await pywebview.api.save_config(entry);
+            if (!saveResult) {
+              throw new Error("ไม่สามารถบันทึกข้อมูลใหม่ได้");
+            }
+
+            addLog(
+              `แก้ไขข้อมูล ${type} สำเร็จ (ID: ${id}, จำนวนครั้ง: ${count})`
+            );
+          } else {
+            // Add new entry
+            data[type].push(entry);
+
+            // Save to Python backend
+            const saveResult = await pywebview.api.save_config(entry);
+            if (!saveResult) {
+              throw new Error("ไม่สามารถบันทึกข้อมูลใหม่ได้");
+            }
+
+            addLog(
+              `บันทึกข้อมูล ${type} สำเร็จ (ID: ${id}, จำนวนครั้ง: ${count})`
+            );
+          }
+
+          renderTable(type);
+
+          // Clear form and editing state
+          document.getElementById("cm-link").value = "";
+          if (countInput) countInput.value = "1";
+          window.editingConfig = null;
+
+          // Remove all keyword-comment pairs except the first one
+          const pairs2 = document.querySelectorAll(".keyword-comment-pair");
+          for (let i = 1; i < pairs2.length; i++) {
+            pairs2[i].remove();
+          }
+
+          // Clear the first pair inputs
+          if (pairs2.length > 0) {
+            const firstPair = pairs2[0];
+            firstPair.querySelector(".keyword-input").value = "";
+            firstPair.querySelector(".comment-input").value = "";
+            firstPair.querySelector(".image-path-input").value = "";
+          }
+
+          // Reset save button text
+          const saveBtn = document.querySelector(
+            'button[onclick^="saveConfig"]'
+          );
+          if (saveBtn) {
+            saveBtn.innerHTML =
+              '<span class="btn-icon">💾</span> บันทึกการตั้งค่า';
+          }
+
+          // Close modal if editing
+          if (isEditing) {
+            modal.style.display = "none";
+          }
+
+          // Reload data from Python backend to ensure sync
+          await loadConfigFromPython();
+        } catch (error) {
+          console.error("Error saving config:", error);
+          addLog(`เกิดข้อผิดพลาด: ${error.message}`);
+
+          // Reload data from Python backend to ensure sync
+          await loadConfigFromPython();
         }
-
-        // Clear the first pair inputs
-        if (pairs2.length > 0) {
-          const firstPair = pairs2[0];
-          firstPair.querySelector(".keyword-input").value = "";
-          firstPair.querySelector(".comment-input").value = "";
-          firstPair.querySelector(".image-path-input").value = "";
-        }
-
-        // Save to Python backend
-        pywebview.api.save_config(entry);
-
-        // Add a log entry for saving config
-        addLog(`บันทึกข้อมูล ${type} สำเร็จ (ID: ${id}, จำนวนครั้ง: ${count})`);
       }
 
       function del(type, idx, id) {
@@ -997,7 +1053,7 @@
         let html = "<table><tr>";
         html +=
           "<th width='60px'>ID</th><th>Link</th><th>จำนวนครั้ง</th><th>รายละเอียด</th>";
-        html += "<th style='width: 80px;'>จัดการ</th></tr>";
+        html += "<th style='width: 120px;'>จัดการ</th></tr>";
 
         data[type].forEach((item, idx) => {
           html += "<tr>";
@@ -1018,11 +1074,75 @@
           pairsHtml += "</div>";
 
           html += `<td>${pairsHtml || ""}</td>`;
-          html += `<td><button class="action-btn" onclick="del('${type}','${idx}','${item.id}')">ลบ</button></td></tr>`;
+          html += `<td>
+            <button class="action-btn" style="background: var(--primary); margin-right: 4px;" onclick="editConfig('${type}','${idx}','${item.id}')">แก้ไข</button>
+            <button class="action-btn" onclick="del('${type}','${idx}','${item.id}')">ลบ</button>
+          </td></tr>`;
         });
 
         html += "</table>";
         container.innerHTML = html;
+      }
+
+      // Add editConfig function
+      function editConfig(type, idx, id) {
+        const item = data[type][parseInt(idx)];
+        if (!item) return;
+
+        // Set the form values
+        document.getElementById("cm-link").value = item.link || "";
+        document.getElementById("cm-count").value = item.count || 1;
+
+        // Clear existing pairs
+        const pairs = document.querySelectorAll(".keyword-comment-pair");
+        pairs.forEach((pair, index) => {
+          if (index > 0) pair.remove();
+        });
+
+        // Set the first pair
+        if (pairs.length > 0) {
+          const firstPair = pairs[0];
+          if (item.content && item.content.length > 0) {
+            const firstContent = item.content[0];
+            firstPair.querySelector(".keyword-input").value =
+              firstContent.keyword || "";
+            firstPair.querySelector(".comment-input").value =
+              firstContent.comment || "";
+            firstPair.querySelector(".image-path-input").value =
+              firstContent.imagePath || "";
+          }
+        }
+
+        // Add additional pairs
+        if (item.content && item.content.length > 1) {
+          for (let i = 1; i < item.content.length; i++) {
+            const content = item.content[i];
+            addKeywordCommentPair(
+              content.keyword || "",
+              content.comment || "",
+              content.imagePath || ""
+            );
+          }
+        }
+
+        // Store the editing state
+        window.editingConfig = {
+          type,
+          idx: parseInt(idx),
+          id: parseInt(id),
+        };
+
+        // Show the modal
+        modal.style.display = "block";
+        showTab(type);
+
+        // Change save button text
+        const saveBtn = document.querySelector('button[onclick^="saveConfig"]');
+        if (saveBtn) {
+          saveBtn.innerHTML = '<span class="btn-icon">💾</span> บันทึกการแก้ไข';
+        }
+
+        addLog(`กำลังแก้ไขข้อมูล ${type} (ID: ${id})`);
       }
 
       async function loadConfigFromPython() {
@@ -1092,6 +1212,7 @@
       window.addLog = addLog;
       window.saveConfig = saveConfig;
       window.del = del;
+      window.editConfig = editConfig;
     </script>
   </body>
 </html>

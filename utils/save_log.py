@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from utils.print_log import print_log
 
 LOG_PATH = "log.json"
-DAILY_LIMIT = 20
+DAILY_LIMIT = 30
 
 def load_log(log_path=LOG_PATH):
     if os.path.exists(log_path):
