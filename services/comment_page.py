@@ -62,7 +62,7 @@ def start_comment_in_page(driver, config=None):
 
                         container = post.find_element(
                             By.XPATH,
-                            'ancestor::div[contains(@class, "html-div") and contains(@class, "xdj266r") and contains(@class, "x11i5rnm") and contains(@class, "xkhd6sd")]'
+                            'ancestor::div[@role="article" and @class="x1a2a7pz"]'
                         )
 
                         try:
@@ -73,25 +73,25 @@ def start_comment_in_page(driver, config=None):
                             time.sleep(1)
                         except:
                             pass
-
-                        text = container.text
-                        clean_text = re.sub(r"ตัวบ่งชี้สถานะออนไลน์.*?·\n?", "", text, flags=re.DOTALL)
-                        clean_text = clean_text.split("ความรู้สึกทั้งหมด")[0]
-                        if not clean_text.strip():
+                        content_post = container.find_element(By.XPATH, 'descendant::div[@class="xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs x126k92a"]')
+                        text = content_post.text
+                        # clean_text = re.sub(r"ตัวบ่งชี้สถานะออนไลน์.*?·\n?", "", text, flags=re.DOTALL)
+                        # clean_text = clean_text.split("ความคิดเห็น")[0]
+                        if not text:
                             print_log("ไม่เจอข้อความโพสต์")
                             continue
-                        print_log(f"ข้อความโพสต์: {clean_text}")
+                        print_log(f"ข้อความโพสต์: {text}")
                         for content in contents:
                             keyword = content["keyword"]
                             comment = content["comment"]
                             image = content["imagePath"]
                             # print_log(f"กำลังตรวจสอบ keyword: '{keyword}'")
-                            if keyword in clean_text:
+                            if keyword in text:
                                 try:
                                     
                                     if not save_link_log(link, daily_limit):
                                         continue
-                                    print_log(f"ข้อความโพสต์: {clean_text}")
+                                    # print_log(f"ข้อความโพสต์: {text}")
                                     print_log(f"เจอ keyword: '{keyword}' ในโพสต์")
                                     print_log(f"link: {link}")
                                     print_log(f"คอมเมนต์: {comment}")
