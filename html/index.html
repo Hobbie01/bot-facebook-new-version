@@ -237,7 +237,7 @@
         <div class="form-section" id="post-tab">
           <input type="text" placeholder="Link" id="po-group" />
           <textarea placeholder="Cookies" id="po-cookies"></textarea>
-          <textarea placeholder="Comment" id="po-comment"></textarea>
+          <textarea placeholder="Conntect" id="po-context"></textarea>
           <input type="text" placeholder="PATH รูปภาพ" id="po-image" />
           <button onclick="saveConfig('post')">บันทึก</button>
           <div class="table-wrapper">
@@ -317,7 +317,7 @@
             id,
             type,
             group: document.getElementById("po-group").value,
-            comment: document.getElementById("po-comment").value,
+            comment: document.getElementById("po-context").value,
             image: document.getElementById("po-image").value,
             cookies: document.getElementById("po-cookies").value,
           };
