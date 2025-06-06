@@ -43,7 +43,7 @@ def start_comment_in_page(driver, config=None):
                 try:
                     posts = WebDriverWait(driver, 60).until(
                             EC.presence_of_all_elements_located(
-                                (By.XPATH, '//div[contains(@class, "html-div xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x1q0g3np")]')
+                                (By.XPATH, '//*[contains(@class, "x193iq5w xeuugli x13faqbe x1vvkbs xlh3980 xvmahel x1n0sxbx x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x676frb x1nxh6w3 x1sibtaa xo1l8bm xi81zsa x1yc453h")]')
                             )
                         )
                     for _, post in enumerate(posts):
