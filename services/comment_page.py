@@ -43,7 +43,7 @@ def start_comment_in_page(driver, config=None):
                 try:
                     posts = WebDriverWait(driver, 60).until(
                             EC.presence_of_all_elements_located(
-                                (By.XPATH, '//div[contains(@class, "html-div xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x1q0g3np")]')
+                                (By.XPATH, '//div[contains(@class, "html-div xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x1q0g3np")]')
                             )
                         )
                     for _, post in enumerate(posts):
@@ -64,7 +64,7 @@ def start_comment_in_page(driver, config=None):
                             By.XPATH,
                             'ancestor::div[@role="article" and @class="x1a2a7pz"]'
                         )
-
+                        print_log('find container')
                         try:
                             see_more_button = container.find_element(By.XPATH,
                                 'descendant::div[@role="button" and text()="ดูเพิ่มเติม"]'
@@ -73,7 +73,7 @@ def start_comment_in_page(driver, config=None):
                             time.sleep(1)
                         except:
                             pass
-                        content_post = container.find_element(By.XPATH, 'descendant::div[@class="xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs x126k92a"]')
+                        content_post = container.find_element(By.XPATH, 'descendant::div[@class="xdj266r x14z9mp xat24cr x1lziwak x1vvkbs x126k92a"]')
                         text = content_post.text
                         # clean_text = re.sub(r"ตัวบ่งชี้สถานะออนไลน์.*?·\n?", "", text, flags=re.DOTALL)
                         # clean_text = clean_text.split("ความคิดเห็น")[0]
