@@ -1,54 +1,37 @@
-from selenium import webdriver # type: ignore
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
-from selenium.webdriver.chrome.service import Service # type: ignore
-from webdriver_manager.chrome import ChromeDriverManager # type: ignore
-from selenium.webdriver.chrome.options import Options # type: ignore
-import undetected_chromedriver as uc
-import chromedriver_autoinstaller
 from services.comment_page import start_comment_in_page
+from services.test import chat_bot
 from utils.print_log import print_log
-from datetime import datetime
-
+import os
 import time
 
-def bot_start(selected,config): 
-    # user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+def bot_start( config):
+    # สร้าง path profile ใหม่ไว้ในโฟลเดอร์โปรเจกต์
+    profile_path = os.path.join(os.path.dirname(__file__), "chrome-profile")
 
     options = Options()
-    options.add_argument('--disable-notifications')
-    options.add_argument('--disable-infobars')
-    # options.add_argument(f'--user-agent={user_agent}')
-    options.add_argument("--start-maximized")
+    options.add_argument(f"--user-data-dir={profile_path}")
+    options.add_argument("--profile-directory=Default")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-translate")  # ปิดการแปลภาษาอัตโนมัติ
-    options.add_argument("--disable-popup-blocking")  # ปิดการบล็อกป็อปอัพ
     if not config['show']: 
-        options.add_argument("--headless")  # Run Chrome in headless mode
-    options.add_argument("--disable-gpu")  # Disable GPU for headless mode
-    options.add_argument("--no-sandbox")  # Bypass OS security model
+            options.add_argument("--headless")
+    # setup driver
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
 
-    # ติดตั้ง ChromeDriver ให้ตรงกับเวอร์ชันของ Chrome อัตโนมัติ
-    chromedriver_autoinstaller.install()
-
-    driver = uc.Chrome(options=options)
-    driver.set_window_size(600, 800)
     print_log("Starting the bot...")
     status = True
+
     try:
         while status:
-            start_comment_in_page(driver, config)
-            if config['repeat']:
-                hour = int(config['hour'])
-                minute = int(config['minute'])
-                set_time = (hour * 60 + minute) * 60  # หน่วยเป็นวินาที
-                print_log(f"Waiting for {hour} hours and {minute} minutes before starting the bot again...")
-                time.sleep(set_time)
+            print_log("start")
+            chat_bot(driver)
 
-            else:
-                print_log("Stopping the bot...")
-                driver.quit()  # Close the browser
-                status = False
+
     except KeyboardInterrupt:
-        print_log("\n🛑 Program stopped!")
-        driver.quit()  # Close the browser
-
+        print_log("🛑 Bot stopped by user.")
+        driver.quit()

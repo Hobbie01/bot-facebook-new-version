@@ -25,6 +25,7 @@ env/
 # Ignore build artifacts
 build/
 dist/
+chrome-profile/
 *.egg-info/
 *.egg
 
